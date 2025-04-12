@@ -8,7 +8,9 @@ router.get('/tables', async (req, res) => {
     const [rows] = await pool.query(
       "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE()"
     );
-    const tables = rows.map(row => row.table_name);
+    console.log('Tables found:', rows);
+    const tables = rows.map(row => row.TABLE_NAME);
+    console.log('Formatted tables:', tables);
     res.json(tables);
   } catch (error) {
     console.error('Error fetching tables:', error);

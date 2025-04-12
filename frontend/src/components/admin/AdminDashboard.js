@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { API_BASE_URL } from '../../config/api';
+import { API_BASE_URL, ENDPOINTS } from '../../config/api';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [tables, setTables] = useState([]);
-  const [selectedTable, setSelectedTable] = useState('');
+  const [selectedTable, setSelectedTable] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [editingRow, setEditingRow] = useState(null);
   const [editedValues, setEditedValues] = useState({});
@@ -14,9 +14,12 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchTables = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/admin/tables`);
+        console.log('Fetching tables from:', `${API_BASE_URL}${ENDPOINTS.ADMIN_TABLES}`);
+        const response = await axios.get(`${API_BASE_URL}${ENDPOINTS.ADMIN_TABLES}`);
+        console.log('Tables response:', response.data);
         setTables(response.data);
         if (response.data.length > 0) {
+          console.log('Setting selected table to:', response.data[0]);
           setSelectedTable(response.data[0]);
         }
       } catch (error) {
@@ -35,7 +38,9 @@ const AdminDashboard = () => {
 
   const fetchTableData = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/admin/table/${selectedTable}`);
+      console.log('Fetching data for table:', selectedTable);
+      const response = await axios.get(`${API_BASE_URL}${ENDPOINTS.ADMIN_TABLE(selectedTable)}`);
+      console.log('Table data response:', response.data);
       setTableData(response.data);
     } catch (error) {
       console.error('Error fetching table data:', error);
@@ -49,7 +54,7 @@ const AdminDashboard = () => {
 
   const handleSave = async () => {
     try {
-      await axios.put(`${API_BASE_URL}/admin/table/${selectedTable}`, {
+      await axios.put(`${API_BASE_URL}${ENDPOINTS.ADMIN_TABLE_UPDATE(selectedTable)}`, {
         id: editingRow.id,
         data: editedValues
       });
@@ -63,7 +68,7 @@ const AdminDashboard = () => {
   const handleDelete = async (row) => {
     if (window.confirm('Are you sure you want to delete this row?')) {
       try {
-        await axios.delete(`${API_BASE_URL}/admin/table/${selectedTable}/${row.id}`);
+        await axios.delete(`${API_BASE_URL}${ENDPOINTS.ADMIN_TABLE_DELETE(selectedTable, row.id)}`);
         fetchTableData();
       } catch (error) {
         console.error('Error deleting row:', error);
@@ -89,11 +94,12 @@ const AdminDashboard = () => {
       <div className="table-selector">
         <label>Select Table:</label>
         <select 
-          value={selectedTable} 
+          value={selectedTable || ''} 
           onChange={(e) => setSelectedTable(e.target.value)}
         >
-          {tables.map(table => (
-            <option key={table} value={table}>{table}</option>
+          <option value="">Select a table...</option>
+          {tables.map((table, index) => (
+            <option key={`${table}-${index}`} value={table}>{table}</option>
           ))}
         </select>
       </div>
@@ -143,7 +149,7 @@ const AdminDashboard = () => {
             </tbody>
           </table>
         ) : (
-          <p>No data available</p>
+          <p className="no-data">No data available for the selected table</p>
         )}
       </div>
     </div>
