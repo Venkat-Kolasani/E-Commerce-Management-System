@@ -1,7 +1,7 @@
 // API Configuration
 
 // Base URL for API requests
-export const API_BASE_URL = 'http://localhost:5002/api';
+export const API_BASE_URL = 'http://localhost:5001/api';
 
 // API Endpoints
 export const ENDPOINTS = {
@@ -30,6 +30,7 @@ export const ENDPOINTS = {
   // Admin
   ADMIN_TABLES: '/admin/tables',
   ADMIN_TABLE: (tableName) => `/admin/table/${tableName}`,
+  ADMIN_TABLE_SCHEMA: (tableName) => `/admin/schema/${tableName}`,
   ADMIN_TABLE_UPDATE: (tableName) => `/admin/table/${tableName}`,
   ADMIN_TABLE_DELETE: (tableName, id) => `/admin/table/${tableName}/${id}`,
   ADMIN_SALES_BY_CATEGORY: '/admin/sales/category',

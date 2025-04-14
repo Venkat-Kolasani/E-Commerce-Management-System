@@ -2,6 +2,34 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('../config/db');
 
+// Get table schema
+router.get('/schema/:tableName', async (req, res) => {
+  try {
+    const tableName = req.params.tableName;
+    console.log('Fetching schema for table:', tableName);
+    
+    // Get table schema
+    const [columns] = await pool.query(
+      `DESCRIBE ${tableName}`
+    );
+    console.log('Table schema:', columns);
+    
+    // Get table data count
+    const [count] = await pool.query(
+      `SELECT COUNT(*) as count FROM ${tableName}`
+    );
+    console.log('Row count:', count[0].count);
+    
+    res.json({
+      schema: columns,
+      rowCount: count[0].count
+    });
+  } catch (error) {
+    console.error('Error fetching schema:', error);
+    res.status(500).json({ message: 'Error fetching schema' });
+  }
+});
+
 // Get list of all tables
 router.get('/tables', async (req, res) => {
   try {
@@ -9,8 +37,14 @@ router.get('/tables', async (req, res) => {
       "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE()"
     );
     console.log('Tables found:', rows);
-    const tables = rows.map(row => row.TABLE_NAME);
-    console.log('Formatted tables:', tables);
+    
+    // Filter out address, cart, and order tables
+    const excludedTables = ['address', 'cart', 'orders'];
+    const tables = rows
+      .map(row => row.TABLE_NAME)
+      .filter(tableName => !excludedTables.includes(tableName.toLowerCase()));
+    
+    console.log('Filtered tables:', tables);
     res.json(tables);
   } catch (error) {
     console.error('Error fetching tables:', error);
@@ -22,17 +56,24 @@ router.get('/tables', async (req, res) => {
 router.get('/table/:tableName', async (req, res) => {
   try {
     const tableName = req.params.tableName;
+    console.log('Fetching data for table:', tableName);
+    
     // Validate table name to prevent SQL injection
     const [validTables] = await pool.query(
       "SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE()"
     );
-    const isValidTable = validTables.some(t => t.table_name === tableName);
+    console.log('Valid tables:', validTables);
+    
+    const isValidTable = validTables.some(t => t.TABLE_NAME === tableName);
+    console.log('Is valid table:', isValidTable);
     
     if (!isValidTable) {
+      console.log('Invalid table name:', tableName);
       return res.status(400).json({ message: 'Invalid table name' });
     }
     
     const [rows] = await pool.query(`SELECT * FROM ${tableName}`);
+    console.log('Rows fetched:', rows.length);
     res.json(rows);
   } catch (error) {
     console.error('Error fetching table data:', error);

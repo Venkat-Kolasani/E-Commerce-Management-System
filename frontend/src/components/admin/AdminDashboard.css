@@ -16,6 +16,52 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.schema-info {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.schema-info h3 {
+  color: #1a237e;
+  margin-bottom: 15px;
+  font-family: 'Righteous', cursive;
+}
+
+.schema-info table {
+  margin-top: 10px;
+  background: white;
+}
+
+.schema-info th {
+  background: linear-gradient(45deg, #FF9933, #FFFFFF, #138808);
+  color: #1a237e;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+}
+
+.schema-info td {
+  font-family: 'Poppins', sans-serif;
+}
+
+.error {
+  color: #dc3545;
+  text-align: center;
+  padding: 10px;
+  margin-top: 10px;
+  background: #f8d7da;
+  border-radius: 4px;
+  font-family: 'Poppins', sans-serif;
+}
+
 .table-selector {
   margin-bottom: 20px;
 }

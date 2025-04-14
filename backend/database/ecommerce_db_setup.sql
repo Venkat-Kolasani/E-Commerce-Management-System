@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS Product (
     CategoryId INT NOT NULL,
     Stock INT DEFAULT 0,
     Brand VARCHAR(50),
+    ImageUrl TEXT,
     FOREIGN KEY (SellerId) REFERENCES Seller(SellerId),
     FOREIGN KEY (CategoryId) REFERENCES Category(CategoryId)
 );
@@ -234,14 +235,14 @@ INSERT INTO Seller (Name, Phone) VALUES
 ('Beauty Zone', '5432109876');
 
 -- Insert sample products
-INSERT INTO Product (ProductName, SellerId, MRP, CategoryId, Stock, Brand) VALUES
-('Smartphone X', 1, 15000.00, 1, 50, 'TechBrand'),
-('Laptop Pro', 1, 50000.00, 1, 30, 'ComputerPro'),
-('Men T-Shirt', 2, 999.00, 2, 100, 'FashionWear'),
-('Women Dress', 2, 1999.00, 2, 80, 'StyleCraft'),
-('Programming Basics', 3, 499.00, 3, 150, 'CodePublishers'),
-('Coffee Maker', 4, 2500.00, 4, 40, 'HomeAppliance'),
-('Face Wash', 5, 299.00, 5, 200, 'SkinCare');
+INSERT INTO Product (ProductName, SellerId, MRP, CategoryId, Stock, Brand, ImageUrl) VALUES
+('Smartphone X', 1, 15000.00, 1, 50, 'TechBrand', 'https://example.com/smartphone-x.jpg'),
+('Laptop Pro', 1, 50000.00, 1, 30, 'ComputerPro', 'https://example.com/laptop-pro.jpg'),
+('Men T-Shirt', 2, 999.00, 2, 100, 'FashionWear', 'https://example.com/men-t-shirt.jpg'),
+('Women Dress', 2, 1999.00, 2, 80, 'StyleCraft', 'https://example.com/women-dress.jpg'),
+('Programming Basics', 3, 499.00, 3, 150, 'CodePublishers', 'https://example.com/programming-basics.jpg'),
+('Coffee Maker', 4, 2500.00, 4, 40, 'HomeAppliance', 'https://example.com/coffee-maker.jpg'),
+('Face Wash', 5, 299.00, 5, 200, 'SkinCare', 'https://example.com/face-wash.jpg');
 
 -- Insert sample customers
 INSERT INTO Customer (FirstName, LastName, Email, DateOfBirth, Phone, Age) VALUES

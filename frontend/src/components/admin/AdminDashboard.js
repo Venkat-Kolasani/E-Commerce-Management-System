@@ -7,8 +7,11 @@ const AdminDashboard = () => {
   const [tables, setTables] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
   const [tableData, setTableData] = useState([]);
+  const [tableSchema, setTableSchema] = useState(null);
+  const [rowCount, setRowCount] = useState(0);
   const [editingRow, setEditingRow] = useState(null);
   const [editedValues, setEditedValues] = useState({});
+  const [error, setError] = useState(null);
 
   // Fetch list of tables
   useEffect(() => {
@@ -29,21 +32,46 @@ const AdminDashboard = () => {
     fetchTables();
   }, []);
 
-  // Fetch table data when selected table changes
+  // Fetch table data and schema when selected table changes
   useEffect(() => {
     if (selectedTable) {
       fetchTableData();
+      fetchTableSchema();
     }
   }, [selectedTable]);
+
+  const fetchTableSchema = async () => {
+    try {
+      console.log('Fetching schema for table:', selectedTable);
+      const response = await axios.get(`${API_BASE_URL}${ENDPOINTS.ADMIN_TABLE_SCHEMA(selectedTable)}`);
+      console.log('Schema response:', response.data);
+      
+      setTableSchema(response.data.schema);
+      setRowCount(response.data.rowCount);
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching schema:', error);
+      setTableSchema(null);
+      setRowCount(0);
+      setError('Error fetching table schema');
+    }
+  };
 
   const fetchTableData = async () => {
     try {
       console.log('Fetching data for table:', selectedTable);
       const response = await axios.get(`${API_BASE_URL}${ENDPOINTS.ADMIN_TABLE(selectedTable)}`);
       console.log('Table data response:', response.data);
-      setTableData(response.data);
+      
+      if (Array.isArray(response.data)) {
+        setTableData(response.data);
+      } else {
+        console.error('Unexpected data format:', response.data);
+        setTableData([]);
+      }
     } catch (error) {
       console.error('Error fetching table data:', error);
+      setTableData([]);
     }
   };
 
@@ -149,8 +177,40 @@ const AdminDashboard = () => {
             </tbody>
           </table>
         ) : (
-          <p className="no-data">No data available for the selected table</p>
+          <div className="no-data">
+            <p>No data available for the selected table</p>
+            {tableSchema && (
+              <div className="schema-info">
+                <h3>Table Schema:</h3>
+                <table className="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Field</th>
+                      <th>Type</th>
+                      <th>Null</th>
+                      <th>Key</th>
+                      <th>Default</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tableSchema.map((column, index) => (
+                      <tr key={index}>
+                        <td>{column.Field}</td>
+                        <td>{column.Type}</td>
+                        <td>{column.Null}</td>
+                        <td>{column.Key}</td>
+                        <td>{column.Default || 'NULL'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         )}
+        {error ? (
+          <p className="error">{error}</p>
+        ) : null}
       </div>
     </div>
   );
