@@ -1,6 +1,6 @@
 # E-commerce Management System with MySQL
 
-This project is an E-commerce Management System with a React frontend and a MySQL database backend. It has been adapted from the original project which used MariaDB.
+This project is an E-commerce Management System with a React frontend and a MySQL database backend.
 
 ## Project Structure
 
